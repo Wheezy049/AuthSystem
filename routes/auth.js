@@ -1,6 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const User = require("../model/user");
+const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 
@@ -63,12 +64,10 @@ router.post('/login', async (req, res) => {
         if (!isMatch) {
             return res.status(401).json({ error: "Invalid credentials" });
         }
+
+        const token = jwt.sign({ userId: user._id, name: user.name }, process.env.JWT_SECRET, { expiresIn: '1h' });
         
-        // res.json({ 
-        //     message: "Login successful", 
-        //     userId: user._id 
-        // });
-        console.log("User logged in:", user);
+        res.cookie('token', token, { httpOnly: true });
         res.render('home', { name: user.name });
         
     } catch (error) {
@@ -79,23 +78,29 @@ router.post('/login', async (req, res) => {
 
 // Middleware to check if user is authenticated
 function isAuthenticated(req, res, next) {
-    // Here you would typically check if the user is authenticated
-    // For simplicity, we assume the user is authenticated
-    next();
+    const token = req.cookies.token;
+
+    if(!token) return res.redirect('/login');
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch (error) {
+        return res.redirect('/login');
+    }
 }
 
 // GET /home
-// router.get('/home', isAuthenticated, (req, res) => {
-//     // Render home page
-//     res.render('home', { name: req.query.name || "Guest" });
-// });
+router.get('/home', isAuthenticated, (req, res) => {
+    // Render home page
+    res.render('home', { name: req.user.name });
+});
 
 
 
 // GET /logout
 router.get('/logout', (req, res) => {
-    // Here you would typically destroy the session
-    // For simplicity, we just redirect to login
+    res.clearCookie('token');
     res.redirect('/login');
 });
 

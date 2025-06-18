@@ -3,6 +3,8 @@ const express = require("express");
 const path = require("path");
 const { connectToDatabase } = require("./config/database");
 const authRoutes = require("./routes/auth");
+const cookieParser = require('cookie-parser');
+
 
 
 const PORT = process.env.PORT || 3000;
@@ -11,6 +13,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 // View engine
 app.set("view engine", "ejs");
