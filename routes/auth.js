@@ -7,7 +7,7 @@ const router = express.Router();
 
 // GET /signup
 router.get('/signup', (req, res) => {
-    res.render('signUp');
+    res.render('signup');
 });
 
 // POST /signup
