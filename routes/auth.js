@@ -130,10 +130,6 @@ router.post("/signup", otpLimiter, async (req, res) => {
   }
 });
 
-// GET /otp
-router.get("/otp", (req, res) => {
-  res.render("otp");
-});
 
 // POST /otp
 router.post("/verify-otp", otpLimiter, async (req, res) => {
