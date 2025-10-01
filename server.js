@@ -5,8 +5,6 @@ const { connectToDatabase } = require("./config/database");
 const authRoutes = require("./routes/auth");
 const cookieParser = require('cookie-parser');
 
-
-
 const PORT = process.env.PORT || 5000;
 const app = express();
 
