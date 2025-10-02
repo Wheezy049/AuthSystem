@@ -63,6 +63,8 @@ npm start
 
 - OTP Verification: User enters OTP received via email. Only verified users can log in. Users can request a new OTP if expired.
 
+- Resend OTP: If the OTP expires or the user didn’t receive it, they can click the Resend OTP button. A new OTP is generated, sent to the email, and the countdown timer restarts.
+
 - Login: If credentials are valid and user is verified, a JWT is generated and stored in a secure HTTP-only cookie.
 
 - Protected Routes: JWT is verified using middleware. If valid, access is granted.
