@@ -161,6 +161,35 @@ console.log("Stored OTP hash:", user.otp_code);
   }
 });
 
+// resnd OTP
+router.post('/resend-otp', otpLimiter, async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+
+  if(!user){
+    return res.status(400).json({ error: "User not found" });
+  }
+
+  const otp = crypto.randomInt(100000, 1000000).toString();
+  const hashedOTP = await bcrypt.hash(otp, 10);
+  const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
+  user.otp_code = hashedOTP;
+  user.otp_expires_at = otpExpiresAt;
+  await user.save();
+  const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "OTP Verification",
+      html: `
+      <h3>Your OTP</h3>
+      <p><strong>OTP:</strong> ${otp}</p>
+    `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ message: "OTP resent successfully" });
+});
+
 // GET /login
 router.get("/login", (req, res) => {
   res.render("login");
