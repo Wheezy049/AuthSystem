@@ -110,7 +110,6 @@ router.post("/signup", otpLimiter, async (req, res) => {
     });
 
     const savedUser = await newUser.save();
-    console.log("User created:", savedUser);
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -142,8 +141,6 @@ router.post("/verify-otp", otpLimiter, async (req, res) => {
     if (user.is_verified) {
       return res.status(400).json({ error: "User already verified" });
     }
-    console.log("User input OTP:", otp);
-console.log("Stored OTP hash:", user.otp_code);
     const isValidOtp = await bcrypt.compare(otp, user.otp_code);
     if (!isValidOtp) return res.status(400).json({ error: "Invalid OTP" });
     if (user.otp_expires_at < new Date()) {

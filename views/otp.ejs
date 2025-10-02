@@ -25,9 +25,32 @@
                 <input type="text" id="otp" name="otp" required autocomplete="off">
             </div>
             <button type="submit" class="submit-btn">Verify</button>
-            <button type="button" class="submit-btn">Resend OTP</button>
+            <button type="button" class="submit-btn" id="resendBtn">Resend OTP</button>
             <p>Time remaining before you can ask to resend OTP: <span id="timer">3</span> minutes</p>
         </form>
     </div>
+
+<script>
+document.getElementById("resendBtn").addEventListener("click", async () => {
+  const email = "<%= userEmail %>";
+  
+  try {
+    const res = await fetch("/resend-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      alert("OTP resent successfully!");
+    } else {
+      alert(data.error || "Failed to resend OTP");
+    }
+  } catch (err) {
+    alert("Something went wrong. Try again.");
+  }
+});
+</script>
 </body>
 </html>
